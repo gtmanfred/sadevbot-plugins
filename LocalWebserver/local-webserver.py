@@ -33,7 +33,6 @@ class Webserver(BotPlugin):
     def __init__(self, *args, **kwargs):
         self.server = None
         self.server_thread = None
-        self.ssl_context = None
         self.test_app = TestApp(flask_app)
         super().__init__(*args, **kwargs)
 
@@ -47,16 +46,11 @@ class Webserver(BotPlugin):
 
         # name of the channel to post in
         get_config_item("WEBSERVER_HTTP_PORT", configuration, default="3142")
-        get_config_item("TOPIC_SCHEDULER_CONFIG", configuration, default={})
 
         super().configure(configuration)
 
 
     def activate(self):
-        if not self.config:
-            self.log.info('Webserver is not configured. Forbid activation')
-            return
-
         if self.server_thread and self.server_thread.is_alive():
             raise Exception('Invalid state, you should not have a webserver already running.')
         self.server_thread = Thread(target=self.run_server, name='Webserver Thread')
@@ -76,7 +70,7 @@ class Webserver(BotPlugin):
 
     def run_server(self):
         try:
-            host = self.config['WEBSERVER_HTTP_HOST']
+            host = "127.0.0.1"
             port = int(self.config['WEBSERVER_HTTP_PORT'])
             self.log.info('Starting the webserver on %s:%i', host, port)
             self.server = ThreadedWSGIServer(host, port, flask_app)
@@ -88,12 +82,15 @@ class Webserver(BotPlugin):
         except Exception:
             self.log.exception('The webserver exploded.')
 
-    @botcmd(template='webstatus')
+    @botcmd
     def webstatus(self, msg, args):
         """
         Gives a quick status of what is mapped in the internal webserver
         """
-        return {'rules': (((rule.rule, rule.endpoint) for rule in flask_app.url_map._rules))}
+        web_server_info = f"Web server is running on port {self.config['WEBSERVER_HTTP_PORT']}.\nConfigured Rules:\n"
+        for rule in flask_app.url_map._rules:
+            web_server_info += f"* {rule.rule} -> {rule.endpoint}\n"
+        return web_server_info
 
     @webhook
     def echo(self, incoming_request):
