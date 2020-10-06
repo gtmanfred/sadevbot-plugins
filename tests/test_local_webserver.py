@@ -5,7 +5,6 @@ import os
 import pytest
 import requests
 import socket
-from errbot.backends.test import FullStackTest, testbot
 from time import sleep
 
 extra_plugin_dir = "."
