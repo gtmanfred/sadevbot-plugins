@@ -11,12 +11,8 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-    - name: Install Dependencies
-      run: |
-        pip install black flake8
+    - uses: psf/black@stable
+      args: -S --check --diff .
     - name: Syntax check
       run: |
         flake8 .
-    - name: Blackened Check
-      run: |
-        black -S --check .
