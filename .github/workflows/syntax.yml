@@ -12,7 +12,8 @@ jobs:
       with:
         python-version: 3.8
     - uses: psf/black@stable
-      args: -S --check --diff .
+      with:
+        args: -S --check --diff .
     - name: Syntax check
       run: |
         flake8 .
