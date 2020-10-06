@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Flake8 Tests
 
 on: [push, pull_request]
 
@@ -13,10 +13,7 @@ jobs:
         python-version: 3.8
     - name: Install Dependencies
       run: |
-        python3 -m pip install -r test-requirements.txt
-    - name: Unit tests
+        python3 -m pip install flake8
+    - name: Run Flake8
       run: |
-        coverage run -m pytest .
-    - name: Code coverage
-      run: |
-        coverage report
+        flake8 .

@@ -1,4 +1,4 @@
-name: Syntax Tests
+name: Blacken Tests
 
 on: [push, pull_request]
 
@@ -12,8 +12,3 @@ jobs:
       with:
         python-version: 3.8
     - uses: psf/black@stable
-      with:
-        args: -S --check --diff .
-    - name: Syntax check
-      run: |
-        flake8 .
