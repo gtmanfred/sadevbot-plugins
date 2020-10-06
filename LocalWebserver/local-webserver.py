@@ -52,36 +52,36 @@ class Webserver(BotPlugin):
     def activate(self):
         if self.server_thread and self.server_thread.is_alive():
             raise Exception(
-                'Invalid state, you should not have a webserver already running.'
+                "Invalid state, you should not have a webserver already running."
             )
-        self.server_thread = Thread(target=self.run_server, name='Webserver Thread')
+        self.server_thread = Thread(target=self.run_server, name="Webserver Thread")
         self.server_thread.start()
-        self.log.debug('Webserver started.')
+        self.log.debug("Webserver started.")
 
         super().activate()
 
     def deactivate(self):
         if self.server is not None:
-            self.log.info('Shutting down the internal webserver.')
+            self.log.info("Shutting down the internal webserver.")
             self.server.shutdown()
-            self.log.info('Waiting for the webserver thread to quit.')
+            self.log.info("Waiting for the webserver thread to quit.")
             self.server_thread.join()
-            self.log.info('Webserver shut down correctly.')
+            self.log.info("Webserver shut down correctly.")
         super().deactivate()
 
     def run_server(self):
         try:
             host = "127.0.0.1"
-            port = int(self.config['WEBSERVER_HTTP_PORT'])
-            self.log.info('Starting the webserver on %s:%i', host, port)
+            port = int(self.config["WEBSERVER_HTTP_PORT"])
+            self.log.info("Starting the webserver on %s:%i", host, port)
             self.server = ThreadedWSGIServer(host, port, flask_app)
             self.server.serve_forever()
-            self.log.debug('Webserver stopped')
+            self.log.debug("Webserver stopped")
         except KeyboardInterrupt:
-            self.log.info('Keyboard interrupt, request a global shutdown.')
+            self.log.info("Keyboard interrupt, request a global shutdown.")
             self.server.shutdown()
         except Exception:
-            self.log.exception('The webserver exploded.')
+            self.log.exception("The webserver exploded.")
 
     @botcmd
     def webstatus(self, msg, args):
