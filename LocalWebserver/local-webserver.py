@@ -8,6 +8,7 @@ from errbot import botcmd, BotPlugin, webhook
 
 from typing import Dict, Any
 from decouple import config as get_config
+
 TEST_REPORT = """*** Test Report
 URL : %s
 Detected your post as : %s
@@ -29,7 +30,6 @@ def get_config_item(
 
 
 class Webserver(BotPlugin):
-
     def __init__(self, *args, **kwargs):
         self.server = None
         self.server_thread = None
@@ -49,10 +49,11 @@ class Webserver(BotPlugin):
 
         super().configure(configuration)
 
-
     def activate(self):
         if self.server_thread and self.server_thread.is_alive():
-            raise Exception('Invalid state, you should not have a webserver already running.')
+            raise Exception(
+                'Invalid state, you should not have a webserver already running.'
+            )
         self.server_thread = Thread(target=self.run_server, name='Webserver Thread')
         self.server_thread.start()
         self.log.debug('Webserver started.')

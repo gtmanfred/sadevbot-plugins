@@ -17,8 +17,10 @@ JSONOBJECT = json.dumps(PYTHONOBJECT)
 # Webserver port is picked based on the process ID so that when tests
 # are run in parallel with pytest-xdist, each process runs the server
 # on a different port
-WEBSERVER_PORT = int(os.environ.get("WEBSERVER_HTTP_PORT", 3142)) + \
-                 int(os.environ.get("PYTEST_XDIST_WORKER", 'gw0').replace('gw', ''))
+WEBSERVER_PORT = int(os.environ.get("WEBSERVER_HTTP_PORT", 3142)) + int(
+    os.environ.get("PYTEST_XDIST_WORKER", 'gw0').replace('gw', '')
+)
+
 
 @pytest.fixture(scope='session', autouse=True)
 def setup_webserverport_env_var(worker_id):
@@ -35,6 +37,7 @@ def webserver_ready(host, port):
     except Exception:
         return False
 
+
 def wait_for_server(port: int):
     failure_count = 10
     while not webserver_ready('localhost', port):
@@ -45,16 +48,21 @@ def wait_for_server(port: int):
         if failure_count == 0:
             raise TimeoutError("Could not start the internal Webserver to test.")
 
+
 @pytest.fixture
 def webhook_testbot(request, testbot):
     wait_for_server(WEBSERVER_PORT)
     return testbot
 
+
 def test_not_configured_url_returns_404(webhook_testbot):
-    assert requests.post(
-        'http://localhost:{}/randomness_blah'.format(WEBSERVER_PORT),
-        "{'toto': 'titui'}"
-    ).status_code == 404
+    assert (
+        requests.post(
+            'http://localhost:{}/randomness_blah'.format(WEBSERVER_PORT),
+            "{'toto': 'titui'}",
+        ).status_code
+        == 404
+    )
 
 
 def test_webserver_plugin_ok(webhook_testbot):
@@ -63,15 +71,13 @@ def test_webserver_plugin_ok(webhook_testbot):
 
 def test_trailing_no_slash_ok(webhook_testbot):
     assert requests.post(
-        'http://localhost:{}/echo'.format(WEBSERVER_PORT),
-        JSONOBJECT
+        'http://localhost:{}/echo'.format(WEBSERVER_PORT), JSONOBJECT
     ).text == repr(json.loads(JSONOBJECT))
 
 
 def test_trailing_slash_also_ok(webhook_testbot):
     assert requests.post(
-        'http://localhost:{}/echo/'.format(WEBSERVER_PORT),
-        JSONOBJECT
+        'http://localhost:{}/echo/'.format(WEBSERVER_PORT), JSONOBJECT
     ).text == repr(json.loads(JSONOBJECT))
 
 
