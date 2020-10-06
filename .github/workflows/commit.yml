@@ -3,7 +3,7 @@ name: Commit Tests
 on: [pull_request]
 
 jobs:
-  build:
+  commit-lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
