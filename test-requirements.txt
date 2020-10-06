@@ -2,3 +2,4 @@ errbot
 pytest
 pytest-env
 pytest-xdist
+coverage
